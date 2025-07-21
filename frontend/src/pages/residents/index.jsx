@@ -11,3 +11,5 @@ export { default as BrgyResidency } from './BrgyResidency';
 export { default as CharterList } from './CharterList';
 export { default as GenerateBlotter } from './GenerateBlotter';
 export { default as StatusBlotterRequests } from './modules/Blotter/StatusBlotterRequests';
+export { default as Officials } from './modules/OrganizationalChart/Officials';
+export { default as Staff } from './modules/OrganizationalChart/Staff';

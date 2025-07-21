@@ -23,6 +23,7 @@ const formatDate = (dateString) => {
 const Profile = () => {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
+  const { fetchUser } = useAuth();
 
   const [form, setForm] = useState({
     first_name: '', middle_name: '', last_name: '', name_suffix: 'none',
@@ -147,12 +148,16 @@ const Profile = () => {
       });
       if (form.residents_id) {
         formData.append('_method', 'PUT');
-        await axiosInstance.post('/profile/update', formData);
+        const updateRes = await axiosInstance.post('/profile/update', formData);
         setSuccess('Profile updated successfully!');
+        // Update residentId in localStorage if present in response
+        if (updateRes.data?.resident?.residents_id) {
+          localStorage.setItem('residentId', updateRes.data.resident.residents_id);
+        }
       } else {
         try {
           const createResponse = await axiosInstance.post('/residents/complete-profile', formData);
-          const newId = createResponse.data?.resident?.resident_id || createResponse.data?.residents_id;
+          const newId = createResponse.data?.resident?.residents_id || createResponse.data?.residents_id;
           if (newId) {
             localStorage.setItem('residentId', newId);
             setSuccess(`Profile created! Your Resident ID: ${newId}`);
@@ -173,7 +178,7 @@ const Profile = () => {
         }
       }
       await fetchProfile();
-      await refreshUser();
+      await fetchUser();
       setIsEditing(false);
       setTimeout(() => setSuccess(null), 5000);
     } catch (error) {

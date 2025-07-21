@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from "../contexts/AuthContext";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { BellIcon, CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import Notification from './Notification';
@@ -8,7 +8,8 @@ import Notification from './Notification';
 const Navbares = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
-  const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
+  const { user, fetchUser, logout } = useAuth();
   const location = useLocation();
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -26,7 +27,7 @@ const Navbares = () => {
   }, [user?.profile?.avatar]);
 
   useEffect(() => {
-    refreshUser();
+    fetchUser && fetchUser();
   }, []);
 
   useEffect(() => {
@@ -55,6 +56,11 @@ const Navbares = () => {
     if (filter === 'read') return !!n.read_at;
     return true;
   });
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-gradient-to-r from-green-900 via-green-800 to-green-700 shadow-lg border-b border-green-900">
@@ -112,12 +118,12 @@ const Navbares = () => {
                     <NavItem to="/messages" icon="fa-envelope" label="Messages" />
                     <NavItem to="/settings" icon="fa-cog" label="Settings" />
                     <li>
-                      <a
-                        href="/"
-                        className="flex items-center px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition duration-200"
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition duration-200 w-full text-left"
                       >
                         <i className="fas fa-sign-out-alt w-5 mr-2" /> Sign out
-                      </a>
+                      </button>
                     </li>
                   </ul>
                 </div>

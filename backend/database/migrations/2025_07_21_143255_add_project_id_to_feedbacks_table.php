@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('blotter_requests', function (Blueprint $table) {
-            $table->timestamp('approved_date')->nullable();
-            $table->string('ticket_number')->nullable();
+        Schema::table('feedbacks', function (Blueprint $table) {
+            $table->foreignId('project_id')->nullable()->constrained()->onDelete('set null');
         });
     }
 
@@ -22,9 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('blotter_requests', function (Blueprint $table) {
-            $table->dropColumn('approved_date');
-            $table->dropColumn('ticket_number');
+        Schema::table('feedbacks', function (Blueprint $table) {
+            $table->dropForeign(['project_id']);
+            $table->dropColumn('project_id');
         });
     }
 };

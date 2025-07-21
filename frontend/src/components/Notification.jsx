@@ -9,6 +9,7 @@ const Notification = ({ user, authToken }) => {
   const [filter, setFilter] = useState('all');
 
   const fetchNotifications = async () => {
+    if (!user || !authToken) return; // Prevent API call if not authenticated
     try {
       const res = await axios.get('http://localhost:8000/api/notifications', {
         headers: { Authorization: `Bearer ${authToken}` }
@@ -24,12 +25,12 @@ const Notification = ({ user, authToken }) => {
   // POLLING: fetch notifications every 10 seconds
   useEffect(() => {
     let interval;
-    if (user) {
+    if (user && authToken) {
       fetchNotifications(); // fetch immediately
       interval = setInterval(fetchNotifications, 10000); // every 10 seconds
     }
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, authToken]);
 
   const markAsRead = async (id) => {
     try {

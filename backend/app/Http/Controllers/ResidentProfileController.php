@@ -36,8 +36,8 @@ class ResidentProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $resident = Resident::where('user_id', $user->id)->first();
-
+        $user->load('profile');
+        $resident = \App\Models\Resident::where('user_id', $user->id)->first();
         return response()->json([
             'user' => $user,
             'profile' => $resident,
@@ -170,12 +170,12 @@ class ResidentProfileController extends Controller
     }
 
     // ✏️ Update existing profile
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         try {
-            $resident = Resident::findOrFail($id);
+            $user = $request->user();
+            $resident = \App\Models\Resident::where('user_id', $user->id)->firstOrFail();
             $profile = $resident->profile;
-            $user = $resident->user;
 
             if (!$profile) {
                 return response()->json(['message' => 'Profile not found.'], 404);
@@ -240,7 +240,7 @@ class ResidentProfileController extends Controller
             $resident->residents_id = $profile->residents_id;
             $resident->save();
 
-            $user->notify(new ProfileUpdatedNotification($profile, $resident));
+            $user->notify(new \App\Notifications\ProfileUpdatedNotification($profile, $resident));
 
             return response()->json([
                 'message' => 'Profile and Resident updated successfully.',
@@ -249,7 +249,7 @@ class ResidentProfileController extends Controller
                 'user' => $user->fresh('profile'),
             ]);
         } catch (\Exception $e) {
-            Log::error('Profile update failed', [
+            \Log::error('Profile update failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);

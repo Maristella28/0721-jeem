@@ -20,6 +20,8 @@ import StatusAssetRequests from './pages/residents/modules/Assets/StatusAssetReq
 import AssetsManagement from './pages/admin/modules/Assets/AssetsManagement';
 import BlotterRequest from './pages/admin/modules/Blotter/BlotterRequest';
 import NewComplaint from './pages/admin/modules/Blotter/NewComplaint';
+import StaffManagement from './pages/admin/modules/Barangay Officials/StaffManagement';
+import OfficialsManagement from './pages/admin/modules/Barangay Officials/OfficialsManagement';
 
 // --- Admin Routes ---
 const adminRoutes = [
@@ -125,6 +127,22 @@ function App() {
           }
         />
         <Route path="/admin/modules/Blotter/NewComplaint" element={<NewComplaint />} />
+        <Route
+          path="/admin/staff-management"
+          element={
+            <ProtectedRoute role="admin">
+              <StaffManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/officials-management"
+          element={
+            <ProtectedRoute role="admin">
+              <OfficialsManagement />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Resident Routes */}
         <Route
@@ -139,6 +157,23 @@ function App() {
             <Route key={path} path={path} element={element} />
           ))}
         </Route>
+        {/* Add direct routes for officials and staff */}
+        <Route
+          path="/residents/officials"
+          element={
+            <ProtectedRoute role="residents">
+              <ResidentPages.Officials />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/residents/staff"
+          element={
+            <ProtectedRoute role="residents">
+              <ResidentPages.Staff />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Staff Routes */}
         <Route

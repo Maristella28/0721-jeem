@@ -12,6 +12,7 @@ use App\Http\Controllers\AssetRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BlotterRequestController;
 use App\Http\Controllers\BlotterRecordsController;
+use App\Http\Controllers\OrganizationalChartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +78,10 @@ Route::get('/user/{id}', function ($id) {
     return response()->json(['user' => $user]);
 });
 
+// 📋 Organizational Chart (Public)
+Route::get('/organizational-chart/officials', [OrganizationalChartController::class, 'getOfficials']);
+Route::get('/organizational-chart/staff', [OrganizationalChartController::class, 'getStaff']);
+
 /*
 |--------------------------------------------------------------------------
 | Protected API Routes (Authenticated via Sanctum)
@@ -133,6 +138,12 @@ Route::middleware(['auth:sanctum', 'throttle:200,1'])->group(function () {
             }
             return response()->json(['exists' => $user->profile !== null]);
         });
+
+        // 📋 Projects CRUD (Admin only)
+        Route::apiResource('/projects', App\Http\Controllers\ProjectController::class);
+
+        // 📝 Feedback management (Admin only)
+        Route::apiResource('/feedbacks', App\Http\Controllers\FeedbackController::class);
     });
 
     /*
@@ -180,6 +191,16 @@ Route::middleware(['auth:sanctum', 'throttle:200,1'])->group(function () {
 
     // Blotter Requests
     Route::post('/blotter-requests', [BlotterRequestController::class, 'store']);
+
+    // 📋 Projects CRUD (Admin only)
+    // Route::apiResource('/projects', App\Http\Controllers\ProjectController::class); // Moved inside admin group
+
+    // 📝 Feedback management (Admin only)
+    // Route::apiResource('/feedbacks', App\Http\Controllers\FeedbackController::class); // Moved inside admin group
+
+    // 💬 Project Reactions (Authenticated users)
+    Route::post('/projects/{projectId}/react', [App\Http\Controllers\ProjectReactionController::class, 'react']);
+    Route::get('/projects/{projectId}/reactions', [App\Http\Controllers\ProjectReactionController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
@@ -191,3 +212,11 @@ Route::middleware(['auth:sanctum'])->get('/blotter-requests', [BlotterRequestCon
 Route::get('/blotter-records', [BlotterRecordsController::class, 'index']);
 Route::get('/blotter-records/{id}', [BlotterRecordsController::class, 'show']);
 Route::post('/blotter-records', [BlotterRecordsController::class, 'store']);
+
+// 📋 Projects (Read-only for all authenticated users)
+Route::get('/projects', [App\Http\Controllers\ProjectController::class, 'index']);
+
+// 📝 Feedback (Residents can submit and view their own)
+Route::post('/feedbacks', [App\Http\Controllers\FeedbackController::class, 'store']);
+Route::get('/feedbacks/my', [App\Http\Controllers\FeedbackController::class, 'myFeedback']);
+Route::get('/feedbacks', [App\Http\Controllers\FeedbackController::class, 'index']); // Allow filtering by project_id
