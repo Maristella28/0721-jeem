@@ -1,0 +1,13 @@
+export { default as Dashboard } from './Dashboard';
+export { default as BlotterAppointment } from './BlotterAppointment';
+export { default as OrganizationalChart } from './OrganizationalChart';
+export { default as Projects } from './Projects';
+export { default as RequestDocuments } from './RequestDocuments';
+export { default as AddFeedback } from './AddFeedback';
+export { default as BrgyClearance } from './BrgyClearance';
+export { default as BrgyBusinessPermit } from './BrgyBusinessPermit';
+export { default as BrgyIndigency } from './BrgyIndigency';
+export { default as BrgyResidency } from './BrgyResidency';
+export { default as CharterList } from './CharterList';
+export { default as GenerateBlotter } from './GenerateBlotter';
+export { default as StatusBlotterRequests } from './modules/Blotter/StatusBlotterRequests';
